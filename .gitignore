@@ -1,0 +1,29 @@
+# -------------------------
+# Terraform
+# -------------------------
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+.terraform/
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.plan
+
+# -------------------------
+# Helm
+# -------------------------
+*.tgz
+charts/
+tmp/
+
+# -------------------------
+# General
+# -------------------------
+*.log
+*.swp
+.DS_Store
+Thumbs.db
