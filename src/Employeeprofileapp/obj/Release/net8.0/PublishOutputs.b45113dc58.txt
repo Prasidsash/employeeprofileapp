@@ -1,0 +1,5 @@
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\publish\EmployeeProfileApp.exe
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\publish\EmployeeProfileApp.dll
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\publish\EmployeeProfileApp.deps.json
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\publish\EmployeeProfileApp.runtimeconfig.json
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\publish\EmployeeProfileApp.pdb

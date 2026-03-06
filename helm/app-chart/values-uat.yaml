@@ -1,0 +1,9 @@
+replicaCount: 1
+
+service:
+  nodePort: 30500
+
+ingress:
+  enabled: true
+
+environment: uat

@@ -1,0 +1,9 @@
+replicaCount: 2
+
+service:
+  nodePort: 30500
+
+ingress:
+  enabled: true
+
+environment: dev

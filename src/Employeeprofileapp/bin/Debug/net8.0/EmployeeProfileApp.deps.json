@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "EmployeeProfileApp/1.0.0": {
+        "runtime": {
+          "EmployeeProfileApp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EmployeeProfileApp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

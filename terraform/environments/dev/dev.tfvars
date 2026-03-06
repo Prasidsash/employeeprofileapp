@@ -1,0 +1,90 @@
+environment = "dev"
+
+# ---------------------
+# Namespace
+# ---------------------
+namespace_name = "employeeprofileapp-dev"
+
+namespace_labels = {
+  environment = "dev"
+  app         = "employeeprofileapp"
+}
+
+# ---------------------
+# Governance
+# ResourceQuota
+# ---------------------
+quota_limits = {
+  pods              = "6"
+  "requests.cpu"    = "500m"
+  "requests.memory" = "512Mi"
+  "limits.cpu"      = "1"
+  "limits.memory"   = "1Gi"
+}
+
+# ---------------------
+# LimitRange
+# ---------------------
+limit_max = {
+  cpu    = "1"
+  memory = "1Gi"
+}
+
+limit_min = {
+  cpu    = "100m"
+  memory = "128Mi"
+}
+
+limit_default = {
+  cpu    = "1"
+  memory = "1Gi"
+}
+
+limit_default_request = {
+  cpu    = "1"
+  memory = "1Gi"
+}
+
+# ---------------------
+# RBAC
+# ---------------------
+service_account_name = "employee-sa"
+
+role_name = "employee-role"
+
+allowed_resources = [
+  "pods",
+  "services",
+  "secrets",
+  "configmaps"
+]
+
+allowed_verbs = [
+  "get",
+  "list",
+  "watch"
+]
+
+# ---------------------
+# Secret
+# ---------------------
+secret_name = "employee-db-secret"
+
+# ---------------------
+# Ingress
+# ---------------------
+ingress_name = "employee-ingress"
+
+ingress_host = "dev.employee.local"
+
+ingress_path = "/"
+
+ingress_path_type = "Prefix"
+
+# Helm release name (used by ingress routing)
+release_name = "employeeprofileapp-dev"
+
+# ---------------------
+# Monitoring
+# ---------------------
+enable_monitoring = false
