@@ -18,6 +18,7 @@ variable "namespace_labels" {
 
 # =====================
 # GOVERNANCE
+# ResourceQuota + LimitRange
 # =====================
 variable "quota_limits" {
   type = map(string)
@@ -64,42 +65,6 @@ variable "allowed_verbs" {
 variable "secret_name" {
   type      = string
   sensitive = true
-  default   = ""
-}
-
-# =====================
-# APPLICATION
-# =====================
-variable "release_name" {
-  type = string
-}
-
-variable "helm_chart_path" {
-  type = string
-}
-
-variable "image_repository" {
-  type = string
-}
-
-variable "image_tag" {
-  type = string
-}
-
-variable "replica_count" {
-  type = number
-}
-
-variable "service_type" {
-  type = string
-}
-
-variable "node_port" {
-  type = number
-}
-
-variable "service_port" {
-  type = number
 }
 
 # =====================
@@ -118,6 +83,10 @@ variable "ingress_path" {
 }
 
 variable "ingress_path_type" {
+  type = string
+}
+
+variable "release_name" {
   type = string
 }
 

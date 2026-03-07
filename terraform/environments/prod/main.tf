@@ -2,6 +2,9 @@ locals {
   db_secret = trimspace(file("D:/2026/Project-EmpProfApp/DockerDesktop-Local/employeeprofileapp/Secrets/db_secret.txt"))
 }
 
+# -----------------------------
+# Namespace
+# -----------------------------
 module "namespace" {
   source = "../../modules/employee_namespace"
 
@@ -9,6 +12,9 @@ module "namespace" {
   namespace_labels = var.namespace_labels
 }
 
+# -----------------------------
+# Governance (Quota + LimitRange)
+# -----------------------------
 module "governance" {
   source = "../../modules/employee_governance"
 
@@ -23,6 +29,9 @@ module "governance" {
   limit_default_request = var.limit_default_request
 }
 
+# -----------------------------
+# RBAC
+# -----------------------------
 module "rbac" {
   source = "../../modules/employee_rbac"
 
@@ -31,38 +40,30 @@ module "rbac" {
   role_name            = var.role_name
   allowed_resources    = var.allowed_resources
   allowed_verbs        = var.allowed_verbs
+
+  depends_on = [
+    module.namespace
+  ]
 }
 
+# -----------------------------
+# Secret
+# -----------------------------
 module "secret" {
   source = "../../modules/employee_secret"
 
   namespace_name = var.namespace_name
   secret_name    = var.secret_name
   db_secret      = local.db_secret
-}
-
-module "employee_app" {
-  source = "../../modules/employee_app"
-
-  namespace_name   = var.namespace_name
-  release_name     = var.release_name
-  helm_chart_path  = var.helm_chart_path
-  image_repository = var.image_repository
-  image_tag        = var.image_tag
-  replica_count    = var.replica_count
-  service_type     = var.service_type
-  node_port        = var.node_port
-  service_port     = var.service_port
-  environment      = var.environment
 
   depends_on = [
-    module.namespace,
-    module.rbac,
-    module.governance,
-    module.secret
+    module.namespace
   ]
 }
 
+# -----------------------------
+# Ingress (Platform controlled)
+# -----------------------------
 module "ingress" {
   source = "../../modules/employee_ingress"
 
@@ -72,11 +73,22 @@ module "ingress" {
   path           = var.ingress_path
   path_type      = var.ingress_path_type
   release_name   = var.release_name
+
+  depends_on = [
+    module.namespace
+  ]
 }
 
+# -----------------------------
+# Monitoring
+# -----------------------------
 module "employee_monitoring" {
   source = "../../modules/employee_monitoring"
 
   enable_monitoring = var.enable_monitoring
   environment       = var.environment
+
+  depends_on = [
+    module.namespace
+  ]
 }

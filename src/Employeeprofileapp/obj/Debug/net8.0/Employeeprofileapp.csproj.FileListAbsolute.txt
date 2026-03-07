@@ -78,3 +78,4 @@ D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeepr
 D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\bin\Debug\net8.0\publish\EmployeeProfileApp.runtimeconfig.json
 D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\bin\Debug\net8.0\publish\EmployeeProfileApp.staticwebassets.endpoints.json
 D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\bin\Debug\net8.0\EmployeeProfileApp.staticwebassets.runtime.json
+D:\2026\Project-EmpProfApp\DockerDesktop-Local\employeeprofileapp\src\Employeeprofileapp\obj\Debug\net8.0\EmployeeProfileApp.sourcelink.json

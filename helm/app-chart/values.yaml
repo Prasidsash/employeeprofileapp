@@ -1,10 +1,3 @@
-replicaCount: 2
-
-image:
-  repository: employeeprofileapp
-  tag: v2
-  pullPolicy: IfNotPresent
-
 serviceAccount:
   name: employee-sa
 

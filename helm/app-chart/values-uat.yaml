@@ -1,7 +1,12 @@
-replicaCount: 1
+replicaCount: 3
+
+image:
+  repository: prasidsash/employeeprofileapp
+  tag: v1
+  pullPolicy: Always
 
 service:
-  nodePort: 30500
+  nodePort: 30502
 
 ingress:
   enabled: true

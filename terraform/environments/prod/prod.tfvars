@@ -1,6 +1,8 @@
 environment = "prod"
 
+# ---------------------
 # Namespace
+# ---------------------
 namespace_name = "employeeprofileapp-prod"
 
 namespace_labels = {
@@ -8,15 +10,21 @@ namespace_labels = {
   app         = "employeeprofileapp"
 }
 
+# ---------------------
 # Governance
+# ResourceQuota
+# ---------------------
 quota_limits = {
-  pods              = "3"
-  "requests.cpu"    = "500m"
-  "requests.memory" = "512Mi"
-  "limits.cpu"      = "1"
-  "limits.memory"   = "1Gi"
+  pods              = "10"
+  "requests.cpu"    = "2"
+  "requests.memory" = "2Gi"
+  "limits.cpu"      = "4"
+  "limits.memory"   = "4Gi"
 }
 
+# ---------------------
+# LimitRange
+# ---------------------
 limit_max = {
   cpu    = "1"
   memory = "1Gi"
@@ -37,30 +45,46 @@ limit_default_request = {
   memory = "1Gi"
 }
 
+# ---------------------
 # RBAC
+# ---------------------
 service_account_name = "employee-sa"
-role_name            = "employee-role"
-allowed_resources    = ["pods", "services", "secrets", "configmaps"]
-allowed_verbs        = ["get", "list", "watch"]
 
+role_name = "employee-role"
+
+allowed_resources = [
+  "pods",
+  "services",
+  "secrets",
+  "configmaps"
+]
+
+allowed_verbs = [
+  "get",
+  "list",
+  "watch"
+]
+
+# ---------------------
 # Secret
+# ---------------------
 secret_name = "employee-db-secret"
 
-# Application
-release_name     = "employeeprofileapp-prod"
-helm_chart_path  = "../../../helm/app-chart"
-image_repository = "employeeprofileapp"
-image_tag        = "v1"
-replica_count    = 1
-service_type     = "NodePort"
-node_port        = 30503
-service_port     = 80
-
+# ---------------------
 # Ingress
-ingress_name      = "employee-ingress"
-ingress_host      = "prod.employee.local"
-ingress_path      = "/"
+# ---------------------
+ingress_name = "employee-ingress"
+
+ingress_host = "prod.employee.local"
+
+ingress_path = "/"
+
 ingress_path_type = "Prefix"
 
+# Helm release name (used by ingress routing)
+release_name = "employeeprofileapp-prod"
+
+# ---------------------
 # Monitoring
+# ---------------------
 enable_monitoring = false
