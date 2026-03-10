@@ -98,7 +98,7 @@ string Page(string title, string emoji, string message)
 
 app.MapGet("/", async context =>
 {
-    await context.Response.WriteAsync(Page("Home", "🏠", "Welcome to Amazon Web Services"));
+    await context.Response.WriteAsync(Page("Home", "🏠", "Welcome to Healthyfoods.com"));
 });
 
 app.MapGet("/employee", async context =>
