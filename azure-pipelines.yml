@@ -57,30 +57,34 @@ stages:
 
   jobs:
 
-  - job: DeployDev
+  - deployment: DeployDev
     displayName: Helm Deploy DEV
+    environment: dev
 
-    steps:
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - checkout: self
+          - checkout: self
 
-    - powershell: |
+          - powershell: |
 
-        Write-Host "================================"
-        Write-Host "Helm Deployment DEV"
-        Write-Host "Image Tag: $(imageTag)"
-        Write-Host "================================"
+              Write-Host "================================"
+              Write-Host "Helm Deployment DEV"
+              Write-Host "Image Tag: $(imageTag)"
+              Write-Host "================================"
 
-        $namespace="employeeprofileapp-dev"
+              $namespace="employeeprofileapp-dev"
 
-        helm upgrade --install employeeprofileapp `
-          ./helm/app-chart `
-          --namespace $namespace `
-          -f ./helm/app-chart/values-dev.yaml `
-          --set image.repository=$(dockerHubRepo) `
-          --set image.tag=$(imageTag)
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace $namespace `
+                -f ./helm/app-chart/values-dev.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$(imageTag)
 
-      displayName: Helm DEV
+            displayName: Helm DEV
 
 
 
@@ -94,30 +98,34 @@ stages:
 
   jobs:
 
-  - job: DeployQA
+  - deployment: DeployQA
     displayName: Helm Deploy QA
+    environment: qa
 
-    steps:
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - checkout: self
+          - checkout: self
 
-    - powershell: |
+          - powershell: |
 
-        Write-Host "================================"
-        Write-Host "Helm Deployment QA"
-        Write-Host "Image Tag: $(imageTag)"
-        Write-Host "================================"
+              Write-Host "================================"
+              Write-Host "Helm Deployment QA"
+              Write-Host "Image Tag: $(imageTag)"
+              Write-Host "================================"
 
-        $namespace="employeeprofileapp-qa"
+              $namespace="employeeprofileapp-qa"
 
-        helm upgrade --install employeeprofileapp `
-          ./helm/app-chart `
-          --namespace $namespace `
-          -f ./helm/app-chart/values-qa.yaml `
-          --set image.repository=$(dockerHubRepo) `
-          --set image.tag=$(imageTag)
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace $namespace `
+                -f ./helm/app-chart/values-qa.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$(imageTag)
 
-      displayName: Helm QA
+            displayName: Helm QA
 
 
 
@@ -131,30 +139,34 @@ stages:
 
   jobs:
 
-  - job: DeployUAT
+  - deployment: DeployUAT
     displayName: Helm Deploy UAT
+    environment: uat
 
-    steps:
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - checkout: self
+          - checkout: self
 
-    - powershell: |
+          - powershell: |
 
-        Write-Host "================================"
-        Write-Host "Helm Deployment UAT"
-        Write-Host "Image Tag: $(imageTag)"
-        Write-Host "================================"
+              Write-Host "================================"
+              Write-Host "Helm Deployment UAT"
+              Write-Host "Image Tag: $(imageTag)"
+              Write-Host "================================"
 
-        $namespace="employeeprofileapp-uat"
+              $namespace="employeeprofileapp-uat"
 
-        helm upgrade --install employeeprofileapp `
-          ./helm/app-chart `
-          --namespace $namespace `
-          -f ./helm/app-chart/values-uat.yaml `
-          --set image.repository=$(dockerHubRepo) `
-          --set image.tag=$(imageTag)
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace $namespace `
+                -f ./helm/app-chart/values-uat.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$(imageTag)
 
-      displayName: Helm UAT
+            displayName: Helm UAT
 
 
 
@@ -168,27 +180,31 @@ stages:
 
   jobs:
 
-  - job: DeployProd
+  - deployment: DeployProd
     displayName: Helm Deploy PROD
+    environment: prod
 
-    steps:
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - checkout: self
+          - checkout: self
 
-    - powershell: |
+          - powershell: |
 
-        Write-Host "================================"
-        Write-Host "Helm Deployment PROD"
-        Write-Host "Image Tag: $(imageTag)"
-        Write-Host "================================"
+              Write-Host "================================"
+              Write-Host "Helm Deployment PROD"
+              Write-Host "Image Tag: $(imageTag)"
+              Write-Host "================================"
 
-        $namespace="employeeprofileapp-prod"
+              $namespace="employeeprofileapp-prod"
 
-        helm upgrade --install employeeprofileapp `
-          ./helm/app-chart `
-          --namespace $namespace `
-          -f ./helm/app-chart/values-prod.yaml `
-          --set image.repository=$(dockerHubRepo) `
-          --set image.tag=$(imageTag)
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace $namespace `
+                -f ./helm/app-chart/values-prod.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$(imageTag)
 
-      displayName: Helm PROD
+            displayName: Helm PROD
