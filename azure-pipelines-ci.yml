@@ -12,12 +12,6 @@ imageTag: $(Build.BuildId)
 
 stages:
 
-# ======================================
-
-# BUILD AND PUSH DOCKER IMAGE
-
-# ======================================
-
 * stage: Build
   displayName: Build and Push Docker Image
 
