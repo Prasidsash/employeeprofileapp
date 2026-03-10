@@ -1,200 +1,170 @@
 trigger: none
 
 resources:
-pipelines:
-
-* pipeline: ci
-  source: CI
-  trigger: true
+  pipelines:
+  - pipeline: ci
+    source: employeeprofileapp-ci
+    trigger: true
 
 pool:
-name: Default
+  name: Default
 
 variables:
-dockerHubRepo: prasidsash/employeeprofileapp
+  dockerHubRepo: prasidsash/employeeprofileapp
 
 stages:
 
 # ======================================
-
-# PREPARE ARTIFACT
-
-# ======================================
-
-* stage: Prepare
-  displayName: Prepare Artifact
-
-  jobs:
-
-  * job: GetArtifact
-    displayName: Download CI Artifact
-
-    steps:
-
-    * download: ci
-      artifact: imageTag
-
-    * powershell: |
-
-      $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
-
-      Write-Host "Image tag from CI: $tag"
-
-      Write-Host "##vso[task.setvariable variable=imageTag]$tag"
-
-      displayName: Extract Image Tag
-
-# ======================================
-
 # DEV DEPLOYMENT
-
 # ======================================
 
-* stage: Deploy_DEV
+- stage: Deploy_DEV
   displayName: Deploy to DEV
-  dependsOn: Prepare
 
   jobs:
 
-  * deployment: DeployDev
+  - deployment: DeployDev
     environment: dev
 
     strategy:
-    runOnce:
-    deploy:
-    steps:
+      runOnce:
+        deploy:
+          steps:
 
-      - checkout: self
+          - download: ci
+            artifact: imageTag
 
-      - powershell: |
+          - powershell: |
 
-          $tag = "$(imageTag)"
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
-          Write-Host "Deploying image tag $tag"
+              Write-Host "Deploying image tag $tag"
 
-          helm upgrade --install employeeprofileapp `
-            ./helm/app-chart `
-            --namespace employeeprofileapp-dev `
-            --create-namespace `
-            -f ./helm/app-chart/values-dev.yaml `
-            --set image.repository=$(dockerHubRepo) `
-            --set image.tag=$tag
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-dev `
+                --create-namespace `
+                -f ./helm/app-chart/values-dev.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
 
-          kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-dev
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-dev
 
-        displayName: Helm DEV
+            displayName: Helm DEV
+
+
 
 # ======================================
-
 # QA DEPLOYMENT
-
 # ======================================
 
-* stage: Deploy_QA
+- stage: Deploy_QA
   displayName: Deploy to QA
   dependsOn: Deploy_DEV
 
   jobs:
 
-  * deployment: DeployQA
+  - deployment: DeployQA
     environment: qa
 
     strategy:
-    runOnce:
-    deploy:
-    steps:
+      runOnce:
+        deploy:
+          steps:
 
-      - checkout: self
+          - download: ci
+            artifact: imageTag
 
-      - powershell: |
+          - powershell: |
 
-          $tag = "$(imageTag)"
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
-          helm upgrade --install employeeprofileapp `
-            ./helm/app-chart `
-            --namespace employeeprofileapp-qa `
-            --create-namespace `
-            -f ./helm/app-chart/values-qa.yaml `
-            --set image.repository=$(dockerHubRepo) `
-            --set image.tag=$tag
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-qa `
+                --create-namespace `
+                -f ./helm/app-chart/values-qa.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
 
-          kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-qa
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-qa
 
-        displayName: Helm QA
-    ```
+            displayName: Helm QA
+
+
 
 # ======================================
-
 # UAT DEPLOYMENT
-
 # ======================================
 
-* stage: Deploy_UAT
+- stage: Deploy_UAT
   displayName: Deploy to UAT
   dependsOn: Deploy_QA
 
   jobs:
 
-  * deployment: DeployUAT
+  - deployment: DeployUAT
     environment: uat
 
     strategy:
-    runOnce:
-    deploy:
-    steps:
+      runOnce:
+        deploy:
+          steps:
 
-      - checkout: self
+          - download: ci
+            artifact: imageTag
 
-      - powershell: |
+          - powershell: |
 
-          $tag = "$(imageTag)"
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
-          helm upgrade --install employeeprofileapp `
-            ./helm/app-chart `
-            --namespace employeeprofileapp-uat `
-            --create-namespace `
-            -f ./helm/app-chart/values-uat.yaml `
-            --set image.repository=$(dockerHubRepo) `
-            --set image.tag=$tag
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-uat `
+                --create-namespace `
+                -f ./helm/app-chart/values-uat.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
 
-          kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-uat
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-uat
 
-        displayName: Helm UAT
+            displayName: Helm UAT
+
+
 
 # ======================================
-
 # PROD DEPLOYMENT
-
 # ======================================
 
-* stage: Deploy_PROD
+- stage: Deploy_PROD
   displayName: Deploy to PROD
   dependsOn: Deploy_UAT
 
   jobs:
 
-  * deployment: DeployProd
+  - deployment: DeployProd
     environment: prod
 
     strategy:
-    runOnce:
-    deploy:
-    steps:
+      runOnce:
+        deploy:
+          steps:
 
-      - checkout: self
+          - download: ci
+            artifact: imageTag
 
-      - powershell: |
+          - powershell: |
 
-          $tag = "$(imageTag)"
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
-          helm upgrade --install employeeprofileapp `
-            ./helm/app-chart `
-            --namespace employeeprofileapp-prod `
-            --create-namespace `
-            -f ./helm/app-chart/values-prod.yaml `
-            --set image.repository=$(dockerHubRepo) `
-            --set image.tag=$tag
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-prod `
+                --create-namespace `
+                -f ./helm/app-chart/values-prod.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
 
-          kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-prod
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-prod
 
-        displayName: Helm PROD
+            displayName: Helm PROD
