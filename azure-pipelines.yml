@@ -32,6 +32,7 @@ stages:
         Write-Host "Starting CI Build"
         Write-Host "Build ID: $(Build.BuildId)"
         Write-Host "Image Tag: $(imageTag)"
+        Write-Host "Commit SHA: $(Build.SourceVersion)"
         Write-Host "================================"
       displayName: Print Build Info
 
@@ -44,8 +45,10 @@ stages:
         Dockerfile: Dockerfile
         tags: |
           $(imageTag)
+          latest
+          $(Build.SourceVersion)
 
-    # Fix for Windows self-hosted agent Docker file lock
+    # Fix Windows agent docker lock issue
     - powershell: |
         docker logout
       displayName: Docker Logout
