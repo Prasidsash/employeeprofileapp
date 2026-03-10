@@ -58,28 +58,12 @@ stages:
   jobs:
 
   - job: DeployDev
+    displayName: Helm Deploy DEV
 
     steps:
 
     - checkout: self
 
-    # Terraform Infrastructure
-    - powershell: |
-
-        Write-Host "================================"
-        Write-Host "Terraform DEV Deployment"
-        Write-Host "================================"
-
-        cd terraform/environments/dev
-
-        terraform init
-        terraform plan -var-file="dev.tfvars"
-        terraform apply -auto-approve -var-file="dev.tfvars"
-
-      displayName: Terraform DEV
-
-
-    # Helm Application Deployment
     - powershell: |
 
         Write-Host "================================"
@@ -92,7 +76,6 @@ stages:
         helm upgrade --install employeeprofileapp `
           ./helm/app-chart `
           --namespace $namespace `
-          --create-namespace `
           -f ./helm/app-chart/values-dev.yaml `
           --set image.repository=$(dockerHubRepo) `
           --set image.tag=$(imageTag)
@@ -112,6 +95,7 @@ stages:
   jobs:
 
   - job: DeployQA
+    displayName: Helm Deploy QA
 
     steps:
 
@@ -119,26 +103,16 @@ stages:
 
     - powershell: |
 
-        Write-Host "Terraform QA Deployment"
-
-        cd terraform/environments/qa
-
-        terraform init
-        terraform apply -auto-approve -var-file="qa.tfvars"
-
-      displayName: Terraform QA
-
-
-    - powershell: |
-
+        Write-Host "================================"
         Write-Host "Helm Deployment QA"
+        Write-Host "Image Tag: $(imageTag)"
+        Write-Host "================================"
 
         $namespace="employeeprofileapp-qa"
 
         helm upgrade --install employeeprofileapp `
           ./helm/app-chart `
           --namespace $namespace `
-          --create-namespace `
           -f ./helm/app-chart/values-qa.yaml `
           --set image.repository=$(dockerHubRepo) `
           --set image.tag=$(imageTag)
@@ -158,6 +132,7 @@ stages:
   jobs:
 
   - job: DeployUAT
+    displayName: Helm Deploy UAT
 
     steps:
 
@@ -165,26 +140,16 @@ stages:
 
     - powershell: |
 
-        Write-Host "Terraform UAT Deployment"
-
-        cd terraform/environments/uat
-
-        terraform init
-        terraform apply -auto-approve -var-file="uat.tfvars"
-
-      displayName: Terraform UAT
-
-
-    - powershell: |
-
+        Write-Host "================================"
         Write-Host "Helm Deployment UAT"
+        Write-Host "Image Tag: $(imageTag)"
+        Write-Host "================================"
 
         $namespace="employeeprofileapp-uat"
 
         helm upgrade --install employeeprofileapp `
           ./helm/app-chart `
           --namespace $namespace `
-          --create-namespace `
           -f ./helm/app-chart/values-uat.yaml `
           --set image.repository=$(dockerHubRepo) `
           --set image.tag=$(imageTag)
@@ -204,6 +169,7 @@ stages:
   jobs:
 
   - job: DeployProd
+    displayName: Helm Deploy PROD
 
     steps:
 
@@ -211,26 +177,16 @@ stages:
 
     - powershell: |
 
-        Write-Host "Terraform PROD Deployment"
-
-        cd terraform/environments/prod
-
-        terraform init
-        terraform apply -auto-approve -var-file="prod.tfvars"
-
-      displayName: Terraform PROD
-
-
-    - powershell: |
-
+        Write-Host "================================"
         Write-Host "Helm Deployment PROD"
+        Write-Host "Image Tag: $(imageTag)"
+        Write-Host "================================"
 
         $namespace="employeeprofileapp-prod"
 
         helm upgrade --install employeeprofileapp `
           ./helm/app-chart `
           --namespace $namespace `
-          --create-namespace `
           -f ./helm/app-chart/values-prod.yaml `
           --set image.repository=$(dockerHubRepo) `
           --set image.tag=$(imageTag)
