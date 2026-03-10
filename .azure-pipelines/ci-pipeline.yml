@@ -40,7 +40,7 @@ stages:
         containerRegistry: dockerhub-connection
         repository: $(dockerHubRepo)
         command: buildAndPush
-        Dockerfile: src/Employeeprofileapp/Dockerfile
+        Dockerfile: Dockerfile
         tags: |
           $(Build.BuildId)
 
