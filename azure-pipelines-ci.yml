@@ -1,18 +1,14 @@
-trigger:
-
-* main
+trigger: none
 
 pool:
 name: Default
 
 stages:
 
-* stage: CI
-  displayName: CI Stage
+* stage: Test
   jobs:
 
-  * job: Test
+  * job: TestJob
     steps:
 
     * script: echo "CI pipeline working"
-      displayName: Test Step
