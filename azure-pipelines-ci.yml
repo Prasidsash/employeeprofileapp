@@ -14,12 +14,9 @@ stages:
 
 * stage: Build
   displayName: Build and Push Docker Image
-
   jobs:
 
   * job: BuildImage
-    displayName: Build Docker Image
-
     steps:
 
     * checkout: self
@@ -42,7 +39,7 @@ stages:
     * powershell: |
       mkdir $(Build.ArtifactStagingDirectory)\imageTag
       echo $(imageTag) > $(Build.ArtifactStagingDirectory)\imageTag\imageTag.txt
-      displayName: Create Image Tag Artifact
+      displayName: Create Artifact
 
     * publish: $(Build.ArtifactStagingDirectory)\imageTag
       artifact: imageTag
