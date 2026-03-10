@@ -4,7 +4,7 @@ trigger:
       - main
 
 pool:
-  name: Default
+  name: Default   # Self-hosted agent
 
 variables:
   dockerHubRepo: prasidsash/employeeprofileapp
@@ -13,7 +13,7 @@ variables:
 stages:
 
 # ======================================================
-# CI – BUILD IMAGE
+# CI STAGE — BUILD AND PUSH IMAGE
 # ======================================================
 
 - stage: Build
@@ -22,14 +22,21 @@ stages:
   jobs:
 
   - job: Build
-    displayName: Build and Push
+    displayName: Build and Push Image
 
     steps:
 
     - checkout: self
 
+    - powershell: |
+        Write-Host "================================"
+        Write-Host "Starting CI Build"
+        Write-Host "Build ID: $(Build.BuildId)"
+        Write-Host "================================"
+      displayName: Print Build Info
+
     - task: Docker@2
-      displayName: Build and Push Image
+      displayName: Build and Push Image to DockerHub
       inputs:
         containerRegistry: dockerhub-connection
         repository: $(dockerHubRepo)
@@ -37,6 +44,8 @@ stages:
         Dockerfile: Dockerfile
         tags: |
           $(imageTag)
+
+
 
 # ======================================================
 # DEV DEPLOYMENT
@@ -46,9 +55,6 @@ stages:
   displayName: Deploy to DEV
   dependsOn: Build
 
-  variables:
-    environment: dev
-
   jobs:
 
   - job: DeployDev
@@ -57,20 +63,42 @@ stages:
 
     - checkout: self
 
-    - script: |
+    # Terraform Infrastructure
+    - powershell: |
+
+        Write-Host "================================"
+        Write-Host "Terraform DEV Deployment"
+        Write-Host "================================"
+
         cd terraform/environments/dev
+
         terraform init
+        terraform plan -var-file="dev.tfvars"
         terraform apply -auto-approve -var-file="dev.tfvars"
+
       displayName: Terraform DEV
 
-    - script: |
-        helm upgrade --install employeeprofileapp \
-        helm/app-chart \
-        --namespace employeeprofileapp-dev \
-        -f helm/app-chart/values-dev.yaml \
-        --set image.repository=$(dockerHubRepo) \
-        --set image.tag=$(imageTag)
+
+    # Helm Application Deployment
+    - powershell: |
+
+        Write-Host "================================"
+        Write-Host "Helm Deployment DEV"
+        Write-Host "Image Tag: $(imageTag)"
+        Write-Host "================================"
+
+        $namespace="employeeprofileapp-dev"
+
+        helm upgrade --install employeeprofileapp `
+          ./helm/app-chart `
+          --namespace $namespace `
+          --create-namespace `
+          -f ./helm/app-chart/values-dev.yaml `
+          --set image.repository=$(dockerHubRepo) `
+          --set image.tag=$(imageTag)
+
       displayName: Helm DEV
+
 
 
 # ======================================================
@@ -81,9 +109,6 @@ stages:
   displayName: Deploy to QA
   dependsOn: Deploy_Dev
 
-  variables:
-    environment: qa
-
   jobs:
 
   - job: DeployQA
@@ -92,20 +117,34 @@ stages:
 
     - checkout: self
 
-    - script: |
+    - powershell: |
+
+        Write-Host "Terraform QA Deployment"
+
         cd terraform/environments/qa
+
         terraform init
         terraform apply -auto-approve -var-file="qa.tfvars"
+
       displayName: Terraform QA
 
-    - script: |
-        helm upgrade --install employeeprofileapp \
-        helm/app-chart \
-        --namespace employeeprofileapp-qa \
-        -f helm/app-chart/values-qa.yaml \
-        --set image.repository=$(dockerHubRepo) \
-        --set image.tag=$(imageTag)
+
+    - powershell: |
+
+        Write-Host "Helm Deployment QA"
+
+        $namespace="employeeprofileapp-qa"
+
+        helm upgrade --install employeeprofileapp `
+          ./helm/app-chart `
+          --namespace $namespace `
+          --create-namespace `
+          -f ./helm/app-chart/values-qa.yaml `
+          --set image.repository=$(dockerHubRepo) `
+          --set image.tag=$(imageTag)
+
       displayName: Helm QA
+
 
 
 # ======================================================
@@ -116,9 +155,6 @@ stages:
   displayName: Deploy to UAT
   dependsOn: Deploy_QA
 
-  variables:
-    environment: uat
-
   jobs:
 
   - job: DeployUAT
@@ -127,20 +163,34 @@ stages:
 
     - checkout: self
 
-    - script: |
+    - powershell: |
+
+        Write-Host "Terraform UAT Deployment"
+
         cd terraform/environments/uat
+
         terraform init
         terraform apply -auto-approve -var-file="uat.tfvars"
+
       displayName: Terraform UAT
 
-    - script: |
-        helm upgrade --install employeeprofileapp \
-        helm/app-chart \
-        --namespace employeeprofileapp-uat \
-        -f helm/app-chart/values-uat.yaml \
-        --set image.repository=$(dockerHubRepo) \
-        --set image.tag=$(imageTag)
+
+    - powershell: |
+
+        Write-Host "Helm Deployment UAT"
+
+        $namespace="employeeprofileapp-uat"
+
+        helm upgrade --install employeeprofileapp `
+          ./helm/app-chart `
+          --namespace $namespace `
+          --create-namespace `
+          -f ./helm/app-chart/values-uat.yaml `
+          --set image.repository=$(dockerHubRepo) `
+          --set image.tag=$(imageTag)
+
       displayName: Helm UAT
+
 
 
 # ======================================================
@@ -151,9 +201,6 @@ stages:
   displayName: Deploy to PROD
   dependsOn: Deploy_UAT
 
-  variables:
-    environment: prod
-
   jobs:
 
   - job: DeployProd
@@ -162,17 +209,30 @@ stages:
 
     - checkout: self
 
-    - script: |
+    - powershell: |
+
+        Write-Host "Terraform PROD Deployment"
+
         cd terraform/environments/prod
+
         terraform init
         terraform apply -auto-approve -var-file="prod.tfvars"
+
       displayName: Terraform PROD
 
-    - script: |
-        helm upgrade --install employeeprofileapp \
-        helm/app-chart \
-        --namespace employeeprofileapp-prod \
-        -f helm/app-chart/values-prod.yaml \
-        --set image.repository=$(dockerHubRepo) \
-        --set image.tag=$(imageTag)
+
+    - powershell: |
+
+        Write-Host "Helm Deployment PROD"
+
+        $namespace="employeeprofileapp-prod"
+
+        helm upgrade --install employeeprofileapp `
+          ./helm/app-chart `
+          --namespace $namespace `
+          --create-namespace `
+          -f ./helm/app-chart/values-prod.yaml `
+          --set image.repository=$(dockerHubRepo) `
+          --set image.tag=$(imageTag)
+
       displayName: Helm PROD
