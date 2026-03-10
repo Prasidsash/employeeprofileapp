@@ -12,10 +12,6 @@ variables:
 
 stages:
 
-# ==========================================
-# BUILD IMAGE
-# ==========================================
-
 - stage: Build
   displayName: Build Docker Image
 
@@ -48,14 +44,14 @@ stages:
           latest
           $(Build.SourceVersion)
 
-    # release docker lock (windows agent)
+    # Fix Windows agent docker lock issue
     - powershell: |
         docker logout
       displayName: Docker Logout
 
-    # publish artifact for CD pipeline
+    # Create artifact containing image tag
     - powershell: |
-        $(imageTag) | Out-File imageTag.txt
+        "$(imageTag)" | Out-File imageTag.txt
       displayName: Create Artifact File
 
     - publish: imageTag.txt

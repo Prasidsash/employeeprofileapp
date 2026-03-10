@@ -3,7 +3,7 @@ trigger: none
 resources:
   pipelines:
   - pipeline: ci
-    source: Prasidsash.employeeprofileapp
+    source: employeeprofileapp-ci
     trigger: true
 
 pool:
@@ -14,9 +14,9 @@ variables:
 
 stages:
 
-# ==========================================
+# ======================================
 # DEV DEPLOYMENT
-# ==========================================
+# ======================================
 
 - stage: Deploy_DEV
   displayName: Deploy to DEV
@@ -35,7 +35,8 @@ stages:
             artifact: imageTag
 
           - powershell: |
-              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               Write-Host "Deploying image tag $tag"
 
@@ -53,13 +54,13 @@ stages:
 
 
 
-# ==========================================
+# ======================================
 # QA DEPLOYMENT
-# ==========================================
+# ======================================
 
 - stage: Deploy_QA
-  dependsOn: Deploy_DEV
   displayName: Deploy to QA
+  dependsOn: Deploy_DEV
 
   jobs:
 
@@ -75,7 +76,8 @@ stages:
             artifact: imageTag
 
           - powershell: |
-              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -91,13 +93,13 @@ stages:
 
 
 
-# ==========================================
+# ======================================
 # UAT DEPLOYMENT
-# ==========================================
+# ======================================
 
 - stage: Deploy_UAT
-  dependsOn: Deploy_QA
   displayName: Deploy to UAT
+  dependsOn: Deploy_QA
 
   jobs:
 
@@ -113,7 +115,8 @@ stages:
             artifact: imageTag
 
           - powershell: |
-              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -129,13 +132,13 @@ stages:
 
 
 
-# ==========================================
+# ======================================
 # PROD DEPLOYMENT
-# ==========================================
+# ======================================
 
 - stage: Deploy_PROD
-  dependsOn: Deploy_UAT
   displayName: Deploy to PROD
+  dependsOn: Deploy_UAT
 
   jobs:
 
@@ -151,7 +154,8 @@ stages:
             artifact: imageTag
 
           - powershell: |
-              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
