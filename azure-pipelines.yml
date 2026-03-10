@@ -28,10 +28,10 @@ stages:
     - checkout: self
 
     - script: |
-        echo "================================="
-        echo "Starting CI Pipeline"
-        echo "Build ID = $(Build.BuildId)"
-        echo "================================="
+        echo =================================
+        echo Starting CI Pipeline
+        echo Build ID = $(Build.BuildId)
+        echo =================================
       displayName: Print Build Information
 
     - task: Docker@2
@@ -44,15 +44,16 @@ stages:
         tags: |
           $(Build.BuildId)
 
-    - script: |
-        echo "Updating Helm values-dev.yaml with new image tag"
+    # FIXED STEP FOR WINDOWS AGENT
+    - powershell: |
+        Write-Host "Updating Helm values-dev.yaml with new image tag"
 
-        sed -i "s/tag:.*/tag: $(Build.BuildId)/" helm/app-chart/values-dev.yaml
+        $file = "helm/app-chart/values-dev.yaml"
 
-        echo "Updated Helm values-dev.yaml"
+        (Get-Content $file) -replace 'tag:.*', "tag: $(Build.BuildId)" | Set-Content $file
 
-        cat helm/app-chart/values-dev.yaml
-
+        Write-Host "Updated values-dev.yaml"
+        Get-Content $file
       displayName: Update Helm Image Tag
 
 
@@ -62,7 +63,6 @@ stages:
 
 - stage: Deploy
   displayName: Deploy Application
-
   dependsOn: Build
 
   jobs:
@@ -74,17 +74,14 @@ stages:
 
     - checkout: self
 
-    - script: |
-        echo "================================="
-        echo "Starting Terraform Deployment"
-        echo "================================="
+    - powershell: |
+        Write-Host "================================="
+        Write-Host "Starting Terraform Deployment"
+        Write-Host "================================="
 
         cd terraform/environments/dev
 
         terraform init
-
         terraform plan
-
         terraform apply -auto-approve
-
       displayName: Terraform Apply
