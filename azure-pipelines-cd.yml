@@ -4,7 +4,7 @@ resources:
 pipelines:
 
 * pipeline: ci
-  source: employeeprofileapp-ci
+  source: CI
   trigger: true
 
 pool:

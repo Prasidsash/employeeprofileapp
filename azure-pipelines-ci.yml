@@ -25,14 +25,12 @@ stages:
     * checkout: self
 
     * powershell: |
-      Write-Host "================================"
       Write-Host "Starting CI Build"
       Write-Host "Build ID: $(Build.BuildId)"
-      Write-Host "================================"
       displayName: Print Build Info
 
     * task: Docker@2
-      displayName: Build and Push Image to DockerHub
+      displayName: Build and Push Image
       inputs:
       containerRegistry: dockerhub-connection
       repository: $(dockerHubRepo)
@@ -48,4 +46,4 @@ stages:
 
     * publish: $(Build.ArtifactStagingDirectory)\imageTag
       artifact: imageTag
-      displayName: Publish Image Tag Artifact
+      displayName: Publish Artifact
