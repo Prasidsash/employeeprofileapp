@@ -45,10 +45,10 @@ stages:
         tags: |
           $(imageTag)
 
+    # Fix for Windows self-hosted agent Docker file lock
     - powershell: |
-        Write-Host "Docker image pushed successfully:"
-        Write-Host "$(dockerHubRepo):$(imageTag)"
-      displayName: Verify Image
+        docker logout
+      displayName: Docker Logout
 
 
 
@@ -88,8 +88,6 @@ stages:
                 -f ./helm/app-chart/values-dev.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
-
-              Write-Host "Checking rollout status..."
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
 
