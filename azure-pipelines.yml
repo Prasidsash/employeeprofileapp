@@ -17,10 +17,9 @@ stages:
 # ======================================================
 
 - stage: Build
-  displayName: Build Docker Image
+  displayName: CI - Build and Push Docker Image
 
   jobs:
-
   - job: Build
     displayName: Build and Push Image
 
@@ -32,6 +31,7 @@ stages:
         Write-Host "================================"
         Write-Host "Starting CI Build"
         Write-Host "Build ID: $(Build.BuildId)"
+        Write-Host "Image Tag: $(imageTag)"
         Write-Host "================================"
       displayName: Print Build Info
 
@@ -45,6 +45,11 @@ stages:
         tags: |
           $(imageTag)
 
+    - powershell: |
+        Write-Host "Image pushed successfully:"
+        Write-Host "$(dockerHubRepo):$(imageTag)"
+      displayName: Verify Image Tag
+
 
 
 # ======================================================
@@ -56,7 +61,6 @@ stages:
   dependsOn: Build
 
   jobs:
-
   - deployment: DeployDev
     displayName: Helm Deploy DEV
     environment: dev
@@ -80,9 +84,12 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
+                --create-namespace `
                 -f ./helm/app-chart/values-dev.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
+
+              kubectl rollout status deployment/employeeprofileapp -n $namespace
 
             displayName: Helm DEV
 
@@ -97,7 +104,6 @@ stages:
   dependsOn: Deploy_Dev
 
   jobs:
-
   - deployment: DeployQA
     displayName: Helm Deploy QA
     environment: qa
@@ -121,9 +127,12 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
+                --create-namespace `
                 -f ./helm/app-chart/values-qa.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
+
+              kubectl rollout status deployment/employeeprofileapp -n $namespace
 
             displayName: Helm QA
 
@@ -138,7 +147,6 @@ stages:
   dependsOn: Deploy_QA
 
   jobs:
-
   - deployment: DeployUAT
     displayName: Helm Deploy UAT
     environment: uat
@@ -162,9 +170,12 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
+                --create-namespace `
                 -f ./helm/app-chart/values-uat.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
+
+              kubectl rollout status deployment/employeeprofileapp -n $namespace
 
             displayName: Helm UAT
 
@@ -179,7 +190,6 @@ stages:
   dependsOn: Deploy_UAT
 
   jobs:
-
   - deployment: DeployProd
     displayName: Helm Deploy PROD
     environment: prod
@@ -203,8 +213,11 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
+                --create-namespace `
                 -f ./helm/app-chart/values-prod.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
+
+              kubectl rollout status deployment/employeeprofileapp -n $namespace
 
             displayName: Helm PROD
