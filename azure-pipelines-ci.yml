@@ -5,44 +5,12 @@ trigger:
 pool:
 name: Default
 
-variables:
-dockerHubRepo: prasidsash/employeeprofileapp
-imageTag: $(Build.BuildId)
-
 stages:
 
-* stage: Build
-  displayName: Build and Push Image
-
+* stage: Test
   jobs:
 
-  * job: BuildJob
-    displayName: Build Docker Image
-
+  * job: TestJob
     steps:
 
-    * checkout: self
-
-    * powershell: |
-      Write-Host "Starting CI Build"
-      Write-Host "Build ID: $(Build.BuildId)"
-      displayName: Print Build Info
-
-    * task: Docker@2
-      displayName: Build and Push Image
-      inputs:
-      containerRegistry: dockerhub-connection
-      repository: $(dockerHubRepo)
-      command: buildAndPush
-      Dockerfile: Dockerfile
-      tags: |
-      $(imageTag)
-
-    * powershell: |
-      mkdir $(Build.ArtifactStagingDirectory)\imageTag
-      echo $(imageTag) > $(Build.ArtifactStagingDirectory)\imageTag\imageTag.txt
-      displayName: Create Artifact
-
-    * publish: $(Build.ArtifactStagingDirectory)\imageTag
-      artifact: imageTag
-      displayName: Publish Artifact
+    * script: echo "CI pipeline working"
