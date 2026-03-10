@@ -64,6 +64,8 @@ stages:
     deploy:
     steps:
 
+      - checkout: self
+
       - powershell: |
 
           $tag = "$(imageTag)"
@@ -81,7 +83,6 @@ stages:
           kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-dev
 
         displayName: Helm DEV
-    ```
 
 # ======================================
 
@@ -103,7 +104,8 @@ stages:
     deploy:
     steps:
 
-    ```
+      - checkout: self
+
       - powershell: |
 
           $tag = "$(imageTag)"
@@ -141,7 +143,8 @@ stages:
     deploy:
     steps:
 
-    ```
+      - checkout: self
+
       - powershell: |
 
           $tag = "$(imageTag)"
@@ -157,7 +160,6 @@ stages:
           kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-uat
 
         displayName: Helm UAT
-    ```
 
 # ======================================
 
@@ -179,7 +181,8 @@ stages:
     deploy:
     steps:
 
-    ```
+      - checkout: self
+
       - powershell: |
 
           $tag = "$(imageTag)"
