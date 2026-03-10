@@ -4,11 +4,13 @@ trigger:
       - main
 
 pool:
-  name: Default   # Self-hosted agent running on your laptop
+  name: Default     # Your self-hosted agent
 
 variables:
+  environment: dev
   imageName: employeeprofileapp
   dockerHubRepo: prasidsash/employeeprofileapp
+  imageTag: $(Build.BuildId)
 
 stages:
 
@@ -20,6 +22,7 @@ stages:
   displayName: Build and Push Image
 
   jobs:
+
   - job: BuildAndPush
     displayName: Docker Build and Push
 
@@ -30,9 +33,10 @@ stages:
     - script: |
         echo =================================
         echo Starting CI Pipeline
+        echo Environment = $(environment)
         echo Build ID = $(Build.BuildId)
         echo =================================
-      displayName: Print Build Information
+      displayName: Print Build Info
 
     - task: Docker@2
       displayName: Build and Push Image to Docker Hub
@@ -42,18 +46,23 @@ stages:
         command: buildAndPush
         Dockerfile: Dockerfile
         tags: |
-          $(Build.BuildId)
+          $(imageTag)
 
-    # FIXED STEP FOR WINDOWS AGENT
+    # --------------------------------------------------
+    # Update Helm values file with new image tag
+    # Windows PowerShell (not sed)
+    # --------------------------------------------------
+
     - powershell: |
-        Write-Host "Updating Helm values-dev.yaml with new image tag"
+        Write-Host "Updating Helm values-dev.yaml with image tag $(imageTag)"
 
         $file = "helm/app-chart/values-dev.yaml"
 
-        (Get-Content $file) -replace 'tag:.*', "tag: $(Build.BuildId)" | Set-Content $file
+        (Get-Content $file) -replace 'tag:.*', "tag: $(imageTag)" | Set-Content $file
 
-        Write-Host "Updated values-dev.yaml"
+        Write-Host "Updated Helm values file:"
         Get-Content $file
+
       displayName: Update Helm Image Tag
 
 
@@ -68,20 +77,25 @@ stages:
   jobs:
 
   - job: TerraformDeploy
-    displayName: Terraform Apply Deployment
+    displayName: Terraform Apply
 
     steps:
 
     - checkout: self
 
     - powershell: |
+
         Write-Host "================================="
         Write-Host "Starting Terraform Deployment"
+        Write-Host "Environment: $(environment)"
         Write-Host "================================="
 
-        cd terraform/environments/dev
+        cd terraform/environments/$(environment)
 
         terraform init
-        terraform plan
-        terraform apply -auto-approve
+
+        terraform plan -var-file="$(environment).tfvars"
+
+        terraform apply -auto-approve -var-file="$(environment).tfvars"
+
       displayName: Terraform Apply
