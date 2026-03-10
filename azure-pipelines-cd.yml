@@ -3,8 +3,11 @@ trigger: none
 resources:
   pipelines:
   - pipeline: ci
-    source: Prasidsash.employeeprofileapp
-    trigger: true
+    source: Prasidsash.employeeprofileapp   # exact CI pipeline name
+    trigger:
+      branches:
+        include:
+          - main
 
 pool:
   name: Default
@@ -38,10 +41,9 @@ stages:
 
           - powershell: |
 
-              Write-Host "Starting DEV Deployment"
+              Write-Host "========== DEV DEPLOYMENT =========="
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
-
               Write-Host "Image Tag: $tag"
 
               kubectl config current-context
@@ -86,9 +88,10 @@ stages:
 
           - powershell: |
 
-              Write-Host "Starting QA Deployment"
+              Write-Host "========== QA DEPLOYMENT =========="
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
+              Write-Host "Image Tag: $tag"
 
               $namespace="employeeprofileapp-qa"
 
@@ -129,9 +132,10 @@ stages:
 
           - powershell: |
 
-              Write-Host "Starting UAT Deployment"
+              Write-Host "========== UAT DEPLOYMENT =========="
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
+              Write-Host "Image Tag: $tag"
 
               $namespace="employeeprofileapp-uat"
 
@@ -172,9 +176,10 @@ stages:
 
           - powershell: |
 
-              Write-Host "Starting PROD Deployment"
+              Write-Host "========== PROD DEPLOYMENT =========="
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
+              Write-Host "Image Tag: $tag"
 
               $namespace="employeeprofileapp-prod"
 
