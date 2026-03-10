@@ -46,9 +46,9 @@ stages:
           $(imageTag)
 
     - powershell: |
-        Write-Host "Image pushed successfully:"
+        Write-Host "Docker image pushed successfully:"
         Write-Host "$(dockerHubRepo):$(imageTag)"
-      displayName: Verify Image Tag
+      displayName: Verify Image
 
 
 
@@ -89,7 +89,9 @@ stages:
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
 
-              kubectl rollout status deployment/employeeprofileapp -n $namespace
+              Write-Host "Checking rollout status..."
+
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
 
             displayName: Helm DEV
 
@@ -132,7 +134,7 @@ stages:
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
 
-              kubectl rollout status deployment/employeeprofileapp -n $namespace
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
 
             displayName: Helm QA
 
@@ -175,7 +177,7 @@ stages:
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
 
-              kubectl rollout status deployment/employeeprofileapp -n $namespace
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
 
             displayName: Helm UAT
 
@@ -218,6 +220,6 @@ stages:
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$(imageTag)
 
-              kubectl rollout status deployment/employeeprofileapp -n $namespace
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
 
             displayName: Helm PROD
