@@ -1,0 +1,166 @@
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: ci
+    source: employeeprofileapp-ci
+    trigger: true
+
+pool:
+  name: Default
+
+variables:
+  dockerHubRepo: prasidsash/employeeprofileapp
+
+stages:
+
+# ==========================================
+# DEV DEPLOYMENT
+# ==========================================
+
+- stage: Deploy_DEV
+  displayName: Deploy to DEV
+
+  jobs:
+
+  - deployment: DeployDev
+    environment: dev
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: ci
+            artifact: imageTag
+
+          - powershell: |
+              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              Write-Host "Deploying image tag $tag"
+
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-dev `
+                --create-namespace `
+                -f ./helm/app-chart/values-dev.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
+
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-dev
+
+            displayName: Helm DEV
+
+
+
+# ==========================================
+# QA DEPLOYMENT
+# ==========================================
+
+- stage: Deploy_QA
+  dependsOn: Deploy_DEV
+  displayName: Deploy to QA
+
+  jobs:
+
+  - deployment: DeployQA
+    environment: qa
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: ci
+            artifact: imageTag
+
+          - powershell: |
+              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-qa `
+                --create-namespace `
+                -f ./helm/app-chart/values-qa.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
+
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-qa
+
+            displayName: Helm QA
+
+
+
+# ==========================================
+# UAT DEPLOYMENT
+# ==========================================
+
+- stage: Deploy_UAT
+  dependsOn: Deploy_QA
+  displayName: Deploy to UAT
+
+  jobs:
+
+  - deployment: DeployUAT
+    environment: uat
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: ci
+            artifact: imageTag
+
+          - powershell: |
+              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-uat `
+                --create-namespace `
+                -f ./helm/app-chart/values-uat.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
+
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-uat
+
+            displayName: Helm UAT
+
+
+
+# ==========================================
+# PROD DEPLOYMENT
+# ==========================================
+
+- stage: Deploy_PROD
+  dependsOn: Deploy_UAT
+  displayName: Deploy to PROD
+
+  jobs:
+
+  - deployment: DeployProd
+    environment: prod
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: ci
+            artifact: imageTag
+
+          - powershell: |
+              $tag = Get-Content "$(Pipeline.Workspace)/imageTag/imageTag.txt"
+
+              helm upgrade --install employeeprofileapp `
+                ./helm/app-chart `
+                --namespace employeeprofileapp-prod `
+                --create-namespace `
+                -f ./helm/app-chart/values-prod.yaml `
+                --set image.repository=$(dockerHubRepo) `
+                --set image.tag=$tag
+
+              kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-prod
+
+            displayName: Helm PROD

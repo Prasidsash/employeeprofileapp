@@ -1,0 +1,62 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: Default
+
+variables:
+  dockerHubRepo: prasidsash/employeeprofileapp
+  imageTag: $(Build.BuildId)
+
+stages:
+
+# ==========================================
+# BUILD IMAGE
+# ==========================================
+
+- stage: Build
+  displayName: Build Docker Image
+
+  jobs:
+
+  - job: BuildImage
+    displayName: Build and Push Image
+
+    steps:
+
+    - checkout: self
+
+    - powershell: |
+        Write-Host "================================"
+        Write-Host "CI BUILD STARTED"
+        Write-Host "Build ID: $(Build.BuildId)"
+        Write-Host "Commit: $(Build.SourceVersion)"
+        Write-Host "================================"
+      displayName: Build Info
+
+    - task: Docker@2
+      displayName: Build and Push Image
+      inputs:
+        containerRegistry: dockerhub-connection
+        repository: $(dockerHubRepo)
+        command: buildAndPush
+        Dockerfile: Dockerfile
+        tags: |
+          $(imageTag)
+          latest
+          $(Build.SourceVersion)
+
+    # release docker lock (windows agent)
+    - powershell: |
+        docker logout
+      displayName: Docker Logout
+
+    # publish artifact for CD pipeline
+    - powershell: |
+        $(imageTag) | Out-File imageTag.txt
+      displayName: Create Artifact File
+
+    - publish: imageTag.txt
+      artifact: imageTag
