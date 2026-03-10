@@ -15,11 +15,40 @@ variables:
 stages:
 
 # ======================================
+# PREPARE ARTIFACT
+# ======================================
+
+- stage: Prepare
+  displayName: Prepare Artifact
+
+  jobs:
+
+  - job: GetArtifact
+    displayName: Download CI Artifact
+
+    steps:
+
+    - download: ci
+      artifact: imageTag
+
+    - powershell: |
+
+        $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
+
+        Write-Host "Image tag from CI: $tag"
+
+        Write-Host "##vso[task.setvariable variable=imageTag]$tag"
+
+      displayName: Extract Image Tag
+
+
+# ======================================
 # DEV DEPLOYMENT
 # ======================================
 
 - stage: Deploy_DEV
   displayName: Deploy to DEV
+  dependsOn: Prepare
 
   jobs:
 
@@ -31,14 +60,9 @@ stages:
         deploy:
           steps:
 
-          - download: ci
-            artifact: imageTag
-
           - powershell: |
 
-              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
-
-              Write-Host "Deploying image tag $tag"
+              Write-Host "Deploying image tag $(imageTag)"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -46,12 +70,11 @@ stages:
                 --create-namespace `
                 -f ./helm/app-chart/values-dev.yaml `
                 --set image.repository=$(dockerHubRepo) `
-                --set image.tag=$tag
+                --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-dev
 
             displayName: Helm DEV
-
 
 
 # ======================================
@@ -72,12 +95,7 @@ stages:
         deploy:
           steps:
 
-          - download: ci
-            artifact: imageTag
-
           - powershell: |
-
-              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -85,12 +103,11 @@ stages:
                 --create-namespace `
                 -f ./helm/app-chart/values-qa.yaml `
                 --set image.repository=$(dockerHubRepo) `
-                --set image.tag=$tag
+                --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-qa
 
             displayName: Helm QA
-
 
 
 # ======================================
@@ -111,12 +128,7 @@ stages:
         deploy:
           steps:
 
-          - download: ci
-            artifact: imageTag
-
           - powershell: |
-
-              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -124,12 +136,11 @@ stages:
                 --create-namespace `
                 -f ./helm/app-chart/values-uat.yaml `
                 --set image.repository=$(dockerHubRepo) `
-                --set image.tag=$tag
+                --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-uat
 
             displayName: Helm UAT
-
 
 
 # ======================================
@@ -150,12 +161,7 @@ stages:
         deploy:
           steps:
 
-          - download: ci
-            artifact: imageTag
-
           - powershell: |
-
-              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
 
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
@@ -163,7 +169,7 @@ stages:
                 --create-namespace `
                 -f ./helm/app-chart/values-prod.yaml `
                 --set image.repository=$(dockerHubRepo) `
-                --set image.tag=$tag
+                --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n employeeprofileapp-prod
 
