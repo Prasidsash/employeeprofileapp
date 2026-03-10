@@ -98,7 +98,10 @@ string Page(string title, string emoji, string message)
 
 app.MapGet("/", async context =>
 {
+ HEAD
     await context.Response.WriteAsync(Page("Home", "🏠", "Welcome to Damadar"));
+    await context.Response.WriteAsync(Page("Home", "🏠", "Welcome to iPhone World 2027"));
+ 1b3af02 (retry pipeline)
 });
 
 app.MapGet("/employee", async context =>
