@@ -12,6 +12,10 @@ variables:
 
 stages:
 
+# ======================================================
+# CI STAGE — BUILD AND PUSH IMAGE
+# ======================================================
+
 - stage: CI
   displayName: Build and Push Docker Image
 
@@ -21,8 +25,10 @@ stages:
 
     steps:
 
+    # Checkout repository
     - checkout: self
 
+    # Print build information
     - powershell: |
         Write-Host "================================"
         Write-Host "Starting CI Build"
@@ -32,26 +38,33 @@ stages:
         Write-Host "================================"
       displayName: Print Build Info
 
+    # Build and push Docker image
     - task: Docker@2
       displayName: Build and Push Image to DockerHub
       inputs:
         containerRegistry: dockerhub-connection
         repository: $(dockerHubRepo)
         command: buildAndPush
-        Dockerfile: Dockerfile
+        Dockerfile: $(Build.SourcesDirectory)/Dockerfile
         tags: |
           $(imageTag)
           latest
           $(Build.SourceVersion)
 
+    # Save image tag as artifact
     - powershell: |
-        echo $(imageTag) > imageTag.txt
+        $tag = "$(imageTag)"
+        $path = "$(Build.ArtifactStagingDirectory)\imageTag.txt"
+        Write-Host "Saving image tag to $path"
+        $tag | Out-File -FilePath $path -Encoding utf8
       displayName: Save Image Tag
 
-    - publish: imageTag.txt
+    # Publish artifact for CD pipeline
+    - publish: $(Build.ArtifactStagingDirectory)/imageTag.txt
       artifact: imageTag
-      displayName: Publish Artifact
+      displayName: Publish Image Tag Artifact
 
+    # Logout Docker (avoids Windows agent lock issue)
     - powershell: |
         docker logout
       displayName: Docker Logout
