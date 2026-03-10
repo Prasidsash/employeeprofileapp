@@ -2,7 +2,7 @@ replicaCount: 3
 
 image:
   repository: prasidsash/employeeprofileapp
-  tag: v8
+  tag: v9
   pullPolicy: Always
 
 service:
