@@ -48,7 +48,7 @@ stages:
           latest
           $(Build.SourceVersion)
 
-    # Fix Windows agent docker lock issue
+    # Fix Windows Docker config lock issue
     - powershell: |
         docker logout
       displayName: Docker Logout
@@ -82,6 +82,9 @@ stages:
               Write-Host "Image Tag: $(imageTag)"
               Write-Host "================================"
 
+              kubectl config current-context
+              kubectl get nodes
+
               $namespace="employeeprofileapp-dev"
 
               helm upgrade --install employeeprofileapp `
@@ -93,6 +96,7 @@ stages:
                 --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
+              kubectl get pods -n $namespace
 
             displayName: Helm DEV
 
@@ -136,6 +140,7 @@ stages:
                 --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
+              kubectl get pods -n $namespace
 
             displayName: Helm QA
 
@@ -179,6 +184,7 @@ stages:
                 --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
+              kubectl get pods -n $namespace
 
             displayName: Helm UAT
 
@@ -222,5 +228,6 @@ stages:
                 --set image.tag=$(imageTag)
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
+              kubectl get pods -n $namespace
 
             displayName: Helm PROD
