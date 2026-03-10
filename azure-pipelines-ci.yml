@@ -7,10 +7,12 @@ name: Default
 
 stages:
 
-* stage: Test
+* stage: CI
+  displayName: CI Stage
   jobs:
 
-  * job: TestJob
+  * job: Test
     steps:
 
     * script: echo "CI pipeline working"
+      displayName: Test Step
