@@ -4,11 +4,10 @@ trigger:
       - main
 
 pool:
-  name: Default     # Your self-hosted agent
+  name: Default   # Self-hosted agent
 
 variables:
   environment: dev
-  imageName: employeeprofileapp
   dockerHubRepo: prasidsash/employeeprofileapp
   imageTag: $(Build.BuildId)
 
@@ -19,7 +18,7 @@ stages:
 # ======================================================
 
 - stage: Build
-  displayName: Build and Push Image
+  displayName: Build and Push Docker Image
 
   jobs:
 
@@ -48,35 +47,17 @@ stages:
         tags: |
           $(imageTag)
 
-    # --------------------------------------------------
-    # Update Helm values file with new image tag
-    # Windows PowerShell (not sed)
-    # --------------------------------------------------
-
-    - powershell: |
-        Write-Host "Updating Helm values-dev.yaml with image tag $(imageTag)"
-
-        $file = "helm/app-chart/values-dev.yaml"
-
-        (Get-Content $file) -replace 'tag:.*', "tag: $(imageTag)" | Set-Content $file
-
-        Write-Host "Updated Helm values file:"
-        Get-Content $file
-
-      displayName: Update Helm Image Tag
-
-
 # ======================================================
-# CD STAGE – TERRAFORM DEPLOYMENT
+# CD STAGE – TERRAFORM INFRASTRUCTURE
 # ======================================================
 
-- stage: Deploy
-  displayName: Deploy Application
+- stage: Terraform
+  displayName: Provision Infrastructure
   dependsOn: Build
 
   jobs:
 
-  - job: TerraformDeploy
+  - job: TerraformApply
     displayName: Terraform Apply
 
     steps:
@@ -99,3 +80,41 @@ stages:
         terraform apply -auto-approve -var-file="$(environment).tfvars"
 
       displayName: Terraform Apply
+
+
+# ======================================================
+# CD STAGE – HELM APPLICATION DEPLOYMENT
+# ======================================================
+
+- stage: Deploy
+  displayName: Deploy Application with Helm
+  dependsOn: Terraform
+
+  jobs:
+
+  - job: HelmDeploy
+    displayName: Helm Upgrade / Install
+
+    steps:
+
+    - checkout: self
+
+    - powershell: |
+
+        Write-Host "================================="
+        Write-Host "Starting Helm Deployment"
+        Write-Host "Environment: $(environment)"
+        Write-Host "Image Tag: $(imageTag)"
+        Write-Host "================================="
+
+        $namespace="employeeprofileapp-$(environment)"
+
+        helm upgrade --install employeeprofileapp `
+          helm/app-chart `
+          --namespace $namespace `
+          --create-namespace `
+          -f helm/app-chart/values-$(environment).yaml `
+          --set image.repository=$(dockerHubRepo) `
+          --set image.tag=$(imageTag)
+
+      displayName: Helm Upgrade
