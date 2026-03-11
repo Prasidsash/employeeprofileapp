@@ -12,3 +12,9 @@ ingress:
   enabled: true
 
 environment: dev
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  cpu: 70

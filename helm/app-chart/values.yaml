@@ -1,6 +1,12 @@
 serviceAccount:
   name: employee-sa
 
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  cpu: 70
+
 service:
   type: NodePort
   port: 80

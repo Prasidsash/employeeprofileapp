@@ -12,3 +12,9 @@ ingress:
   enabled: true
 
 environment: uat
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 8
+  cpu: 65

@@ -12,3 +12,9 @@ ingress:
   enabled: true
 
 environment: qa
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 7
+  cpu: 65

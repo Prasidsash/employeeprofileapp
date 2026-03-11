@@ -12,3 +12,9 @@ ingress:
   enabled: true
 
 environment: prod
+
+autoscaling:
+  enabled: true
+  minReplicas: 4
+  maxReplicas: 10
+  cpu: 60
