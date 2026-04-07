@@ -2,10 +2,13 @@ replicaCount: 1
 
 image:
   repository: prasidsash/employeeprofileapp
-  tag: 0
+  tag: ""                     # 👈 leave empty (pipeline will inject)
   pullPolicy: Always
 
 service:
+  type: NodePort              # 👈 REQUIRED
+  port: 80
+  targetPort: 8080            # 👈 must match your app
   nodePort: 30503
 
 ingress:
