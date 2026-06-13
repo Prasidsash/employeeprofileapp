@@ -2,13 +2,16 @@ replicaCount: 1
 
 image:
   repository: prasidsash/employeeprofileapp
-  tag: ""
+  tag: latest
   pullPolicy: Always
 
 environment: dev
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
   targetPort: 8080
-  nodePort: 30080
+
+ingress:
+  enabled: true
+  host: dev.employeeprofileapp.local

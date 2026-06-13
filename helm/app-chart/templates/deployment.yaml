@@ -22,7 +22,7 @@ spec:
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/restartedAt: "{{ now | quote }}"
+        kubectl.kubernetes.io/restartedAt: {{ now | quote }}
       labels:
         {{- include "employeeprofileapp.selectorLabels" . | nindent 8 }}
 
