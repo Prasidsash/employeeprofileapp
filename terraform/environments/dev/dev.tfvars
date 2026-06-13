@@ -82,7 +82,7 @@ ingress_path = "/"
 ingress_path_type = "Prefix"
 
 # Helm release name (used by ingress routing)
-release_name = "employeeprofileapp-dev"
+release_name = "employeeprofileapp"
 
 # ---------------------
 # Monitoring

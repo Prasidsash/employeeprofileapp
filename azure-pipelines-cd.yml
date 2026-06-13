@@ -18,44 +18,11 @@ variables:
 stages:
 
 # ======================================================
-# INSTALL NGINX INGRESS CONTROLLER
-# ======================================================
-
-- stage: Install_Ingress
-  displayName: Install NGINX Ingress Controller
-
-  jobs:
-  - job: InstallIngress
-    displayName: Install NGINX Ingress
-
-    steps:
-
-    - checkout: self
-
-    - powershell: |
-
-        Write-Host "========== INSTALL NGINX INGRESS =========="
-
-        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-        helm repo update
-
-        helm upgrade --install ingress-nginx `
-          ingress-nginx/ingress-nginx `
-          --namespace ingress-nginx `
-          --create-namespace `
-          --wait
-
-        kubectl get pods -n ingress-nginx
-
-      displayName: Install NGINX Ingress
-
-# ======================================================
 # DEV DEPLOYMENT
 # ======================================================
 
 - stage: Deploy_DEV
   displayName: Deploy to DEV
-  dependsOn: Install_Ingress
 
   jobs:
   - deployment: DeployDev
@@ -87,7 +54,6 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
-                --create-namespace `
                 -f ./helm/app-chart/values-dev.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$tag
@@ -95,7 +61,6 @@ stages:
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
               kubectl get pods -n $namespace
               kubectl get svc -n $namespace
-              kubectl get ingress -n $namespace
 
 # ======================================================
 # QA DEPLOYMENT
@@ -132,7 +97,6 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
-                --create-namespace `
                 -f ./helm/app-chart/values-qa.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$tag
@@ -175,7 +139,6 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
-                --create-namespace `
                 -f ./helm/app-chart/values-uat.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$tag
@@ -218,7 +181,6 @@ stages:
               helm upgrade --install employeeprofileapp `
                 ./helm/app-chart `
                 --namespace $namespace `
-                --create-namespace `
                 -f ./helm/app-chart/values-prod.yaml `
                 --set image.repository=$(dockerHubRepo) `
                 --set image.tag=$tag

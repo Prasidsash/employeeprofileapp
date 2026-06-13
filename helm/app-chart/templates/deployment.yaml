@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: {{ include "employeeprofileapp.fullname" . }}
   labels:
@@ -20,6 +21,8 @@ spec:
 
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "{{ now | quote }}"
       labels:
         {{- include "employeeprofileapp.selectorLabels" . | nindent 8 }}
 

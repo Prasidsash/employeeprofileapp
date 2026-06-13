@@ -1,5 +1,5 @@
 locals {
-  db_secret = trimspace(file("D:/2026/Project-EmpProfApp/DockerDesktop-Local/employeeprofileapp/Secrets/db_secret.txt"))
+  db_secret = trimspace(file("../../Secrets/db_secret.txt"))
 }
 
 # -----------------------------
