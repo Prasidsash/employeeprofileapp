@@ -1,5 +1,5 @@
 locals {
-  db_secret = trimspace(file("../../Secrets/db_secret.txt"))
+  db_secret = trimspace(file("${path.module}/../../../Secrets/db_secret.txt"))
 }
 
 # -----------------------------
