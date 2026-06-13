@@ -9,7 +9,7 @@ service:
 
 ingress:
   enabled: false
-  className: nginx
+  className: traefik
   hosts: []
 
 secret:
