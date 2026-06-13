@@ -62,24 +62,6 @@ module "secret" {
 }
 
 # -----------------------------
-# Ingress (Platform controlled)
-# -----------------------------
-module "ingress" {
-  source = "../../modules/employee_ingress"
-
-  namespace_name = var.namespace_name
-  ingress_name   = var.ingress_name
-  host           = var.ingress_host
-  path           = var.ingress_path
-  path_type      = var.ingress_path_type
-  release_name   = var.release_name
-
-  depends_on = [
-    module.namespace
-  ]
-}
-
-# -----------------------------
 # Monitoring
 # -----------------------------
 module "employee_monitoring" {

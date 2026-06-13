@@ -3,7 +3,7 @@ trigger: none
 resources:
   pipelines:
   - pipeline: ci
-    source: CI Build   # exact CI pipeline name
+    source: CI Build
     trigger:
       branches:
         include:
@@ -18,11 +18,44 @@ variables:
 stages:
 
 # ======================================================
+# INSTALL NGINX INGRESS CONTROLLER
+# ======================================================
+
+- stage: Install_Ingress
+  displayName: Install NGINX Ingress Controller
+
+  jobs:
+  - job: InstallIngress
+    displayName: Install NGINX Ingress
+
+    steps:
+
+    - checkout: self
+
+    - powershell: |
+
+        Write-Host "========== INSTALL NGINX INGRESS =========="
+
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo update
+
+        helm upgrade --install ingress-nginx `
+          ingress-nginx/ingress-nginx `
+          --namespace ingress-nginx `
+          --create-namespace `
+          --wait
+
+        kubectl get pods -n ingress-nginx
+
+      displayName: Install NGINX Ingress
+
+# ======================================================
 # DEV DEPLOYMENT
 # ======================================================
 
 - stage: Deploy_DEV
   displayName: Deploy to DEV
+  dependsOn: Install_Ingress
 
   jobs:
   - deployment: DeployDev
@@ -61,7 +94,8 @@ stages:
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
               kubectl get pods -n $namespace
-
+              kubectl get svc -n $namespace
+              kubectl get ingress -n $namespace
 
 # ======================================================
 # QA DEPLOYMENT
@@ -106,7 +140,6 @@ stages:
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
               kubectl get pods -n $namespace
 
-
 # ======================================================
 # UAT DEPLOYMENT
 # ======================================================
@@ -149,7 +182,6 @@ stages:
 
               kubectl rollout status deployment/employeeprofileapp-employeeprofileapp -n $namespace
               kubectl get pods -n $namespace
-
 
 # ======================================================
 # PROD DEPLOYMENT

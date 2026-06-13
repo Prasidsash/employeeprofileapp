@@ -13,5 +13,6 @@ service:
 
 ingress:
   enabled: true
+  host: prod.employee.local
 
 environment: prod
