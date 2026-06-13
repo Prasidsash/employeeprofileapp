@@ -43,11 +43,16 @@ stages:
 
               Write-Host "========== DEV DEPLOYMENT =========="
 
-              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
-              Write-Host "Image Tag: $tag"
+              $env:KUBECONFIG = "C:\Users\aixra\.kube\config"
+
+              kubectl config use-context rancher-desktop
 
               kubectl config current-context
+
               kubectl get nodes
+
+              $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
+              Write-Host "Image Tag: $tag"
 
               $namespace="employeeprofileapp-dev"
 
@@ -88,6 +93,12 @@ stages:
           - powershell: |
 
               Write-Host "========== QA DEPLOYMENT =========="
+
+              $env:KUBECONFIG = "C:\Users\aixra\.kube\config"
+
+              kubectl config use-context rancher-desktop
+
+              kubectl config current-context
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
               Write-Host "Image Tag: $tag"
@@ -131,6 +142,12 @@ stages:
 
               Write-Host "========== UAT DEPLOYMENT =========="
 
+              $env:KUBECONFIG = "C:\Users\aixra\.kube\config"
+
+              kubectl config use-context rancher-desktop
+
+              kubectl config current-context
+
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
               Write-Host "Image Tag: $tag"
 
@@ -172,6 +189,12 @@ stages:
           - powershell: |
 
               Write-Host "========== PROD DEPLOYMENT =========="
+
+              $env:KUBECONFIG = "C:\Users\aixra\.kube\config"
+
+              kubectl config use-context rancher-desktop
+
+              kubectl config current-context
 
               $tag = Get-Content "$(Pipeline.Workspace)/ci/imageTag/imageTag.txt"
               Write-Host "Image Tag: $tag"
