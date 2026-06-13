@@ -117,4 +117,4 @@ app.MapGet("/reports", async context =>
 });
 
 app.UseStaticFiles();
-app.Run();
+app.Run("http://0.0.0.0:8080");

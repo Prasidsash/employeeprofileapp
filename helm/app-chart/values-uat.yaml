@@ -9,7 +9,7 @@ service:
   type: NodePort              # 👈 REQUIRED
   port: 80
   targetPort: 8080            # 👈 must match your app
-  nodePort: 30502
+  nodePort: 30082
 
 ingress:
   enabled: true
