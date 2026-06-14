@@ -3,6 +3,17 @@ trigger:
     include:
       - main
 
+  paths:
+    include:
+      - src/**
+      - Dockerfile
+
+    exclude:
+      - terraform/**
+      - helm/**
+      - .gitignore
+      - README.md
+
 pool:
   name: Default
 
