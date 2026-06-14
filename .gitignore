@@ -2,23 +2,49 @@
 # Terraform
 # -------------------------
 *.tfstate
-*.tfstate.backup
-*.tfvars
-*.tfvars.json
+*.tfstate.*
 .terraform/
 crash.log
+
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
 *.plan
+
+!.terraform.lock.hcl
 
 # -------------------------
 # Helm
 # -------------------------
 *.tgz
-charts/
 tmp/
+
+# -------------------------
+# VS Code
+# -------------------------
+.vscode/
+
+# -------------------------
+# SonarQube
+# -------------------------
+.scannerwork/
+
+# -------------------------
+# .NET
+# -------------------------
+bin/
+obj/
+
+# -------------------------
+# Secrets
+# -------------------------
+Secrets/
+*.pfx
+*.pem
+*.key
+*.crt
 
 # -------------------------
 # General
