@@ -3,7 +3,8 @@ trigger:
     include:
       - main
 
-     exclude:
+  paths:
+    exclude:
       - terraform/**
       - .terraform/**
       - .gitignore
