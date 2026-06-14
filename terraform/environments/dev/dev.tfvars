@@ -15,7 +15,7 @@ namespace_labels = {
 # ResourceQuota
 # ---------------------
 quota_limits = {
-  pods              = "10"
+  pods              = "9"
   "requests.cpu"    = "2"
   "requests.memory" = "2Gi"
   "limits.cpu"      = "4"
