@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "employeeprofileapp.labels" . | nindent 4 }}
 spec:
-  ingressClassName: traefik
+  ingressClassName: nginx
 
   rules:
     - host: {{ .Values.ingress.host }}
