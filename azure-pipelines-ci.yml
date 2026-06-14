@@ -3,14 +3,9 @@ trigger:
     include:
       - main
 
-  paths:
-    include:
-      - src/**
-      - Dockerfile
-
-    exclude:
+     exclude:
       - terraform/**
-      - helm/**
+      - .terraform/**
       - .gitignore
       - README.md
 
